@@ -5,7 +5,7 @@ import { createClient } from '@/lib/supabase/client'
 import { Message, COLOR_PALETTE } from '@/types'
 
 const FIXED_LANES = 5         // 固定レーン数。上から順に 0〜4
-const LANE_HEIGHT = 40        // px
+const LANE_HEIGHT = 52        // px
 const ANIM_DURATION = 8000    // コメントが右端から左端に抜けるまでの ms
 
 type ActiveComment = Message & { lane: number; animKey: string }
@@ -93,8 +93,8 @@ export default function DanmakuLayer({ roomId }: Props) {
             color: colorMap[comment.color] ?? '#ffffff',
             textShadow: '-1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000, 0 2px 8px rgba(0,0,0,0.8)',
             animation: `danmaku-slide ${ANIM_DURATION}ms linear forwards`,
-            fontSize: '1.9rem',
-            lineHeight: '36px',
+            fontSize: '3rem',
+            lineHeight: '48px',
           }}
         >
           {comment.nickname ? (
