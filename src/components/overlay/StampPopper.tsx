@@ -62,10 +62,11 @@ export default function StampPopper({ roomSlug }: Props) {
       {stamps.map(stamp => (
         <div
           key={stamp.id}
-          className="absolute text-5xl select-none"
+          className="absolute select-none"
           style={{
             bottom: '10%',
             left: `${stamp.x}%`,
+            fontSize: '12vh', // ディスプレイ相対（弾幕の6vhより大きめに）
             animation: `stamp-pop ${ANIM_DURATION}ms ease-out forwards`,
             filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.6))',
           }}
