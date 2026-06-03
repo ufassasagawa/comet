@@ -26,7 +26,7 @@ export default function RoomCard({ room, origin, onUpdated }: Props) {
   }
 
   async function endRoom() {
-    if (!confirm(`「${room.title}」を終了しますか？\n参加者がアクセスできなくなります。`)) return
+    if (!confirm(`「${room.title}」を削除しますか？\n参加者がアクセスできなくなります。`)) return
     setEnding(true)
     await supabase.from('rooms').update({ is_active: false }).eq('id', room.id)
     onUpdated()
@@ -93,7 +93,7 @@ export default function RoomCard({ room, origin, onUpdated }: Props) {
               className="px-4 py-2 rounded-xl text-sm font-medium text-red-400 hover:text-red-300 transition-colors disabled:opacity-40"
               style={{ background: '#0f172a' }}
             >
-              終了
+              削除
             </button>
           </>
         )}

@@ -42,12 +42,20 @@ export default function DashboardPage() {
           <span className="text-2xl">☄️</span>
           <span className="text-xl font-bold text-white">Comet</span>
         </div>
-        <button
-          onClick={handleSignOut}
-          className="text-sm text-slate-400 hover:text-white transition-colors"
-        >
-          ログアウト
-        </button>
+        <div className="flex items-center gap-4">
+          <button
+            onClick={() => { window.location.href = '/quit-app' }}
+            className="text-sm text-slate-500 hover:text-red-400 transition-colors"
+          >
+            アプリを終了
+          </button>
+          <button
+            onClick={handleSignOut}
+            className="text-sm text-slate-400 hover:text-white transition-colors"
+          >
+            ログアウト
+          </button>
+        </div>
       </header>
 
       <main className="max-w-2xl mx-auto px-4 py-8">
