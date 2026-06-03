@@ -4,8 +4,8 @@ import { useEffect, useRef, useState, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Message, COLOR_PALETTE } from '@/types'
 
-const FIXED_LANES = 5         // 固定レーン数。上から順に 0〜4
-const LANE_VH = 8             // 1レーンの高さ = 画面高の8% → 5レーンで上40%が埋まる（ディスプレイ相対）
+const FIXED_LANES = 12        // 固定レーン数。上から順に 0〜11（画面をほぼ全面活用＝レーン不足を防ぐ）
+const LANE_VH = 8             // 1レーンの高さ = 画面高の8% → 12レーンで約96%（2+12×8=98vh）（ディスプレイ相対）
 const TOP_OFFSET_VH = 2       // 最上段の上マージン（メニューバー回避）
 const ANIM_DURATION = 8000    // コメントが右端から左端に抜けるまでの ms
 
