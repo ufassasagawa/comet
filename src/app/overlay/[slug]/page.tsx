@@ -13,7 +13,8 @@ export default async function OverlayPage({
   const { slug } = await params
   const { app } = await searchParams
   // Electron オーバーレイから開かれた場合は背景透明（PPT等の上に重ねるため）
-  const bg = app === '1' ? 'transparent' : '#000'
+  const isApp = app === '1'
+  const bg = isApp ? 'transparent' : '#000'
   const supabase = await createClient()
 
   const { data: { user } } = await supabase.auth.getUser()
@@ -42,14 +43,20 @@ export default async function OverlayPage({
   }
 
   return (
-    <div className="fixed inset-0" style={{ background: bg }}>
-      <DanmakuLayer roomId={room.id} />
-      <StampPopper roomSlug={slug} />
+    <>
+      {/* app=1 のとき html/body の背景色を透明に上書き（globals.css のネイビーを打ち消す） */}
+      {isApp && (
+        <style>{`html, body { background: transparent !important; }`}</style>
+      )}
+      <div className="fixed inset-0" style={{ background: bg }}>
+        <DanmakuLayer roomId={room.id} />
+        <StampPopper roomSlug={slug} />
 
-      {/* 控えめなルーム名表示 */}
-      <div className="absolute bottom-4 right-4 text-slate-600 text-xs pointer-events-none select-none">
-        ☄️ {room.title}
+        {/* 控えめなルーム名表示 */}
+        <div className="absolute bottom-4 right-4 text-slate-600 text-xs pointer-events-none select-none">
+          ☄️ {room.title}
+        </div>
       </div>
-    </div>
+    </>
   )
 }
