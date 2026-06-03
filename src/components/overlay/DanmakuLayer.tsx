@@ -67,7 +67,7 @@ export default function DanmakuLayer({ roomId }: Props) {
   }, [])
 
   useEffect(() => {
-    const channel = supabase
+    let channel = supabase
       .channel(`danmaku:${roomId}`)
       .on(
         'postgres_changes',
@@ -79,7 +79,35 @@ export default function DanmakuLayer({ roomId }: Props) {
       )
       .subscribe()
 
-    return () => { supabase.removeChannel(channel) }
+    // Electron から非表示イベントが来たら切断してリソース解放
+    function onHide() {
+      supabase.removeChannel(channel)
+      setComments([])
+      queueRef.current = []
+    }
+    // 再表示イベントが来たら再接続
+    function onShow() {
+      channel = supabase
+        .channel(`danmaku:${roomId}`)
+        .on(
+          'postgres_changes',
+          { event: 'INSERT', schema: 'public', table: 'messages', filter: `room_id=eq.${roomId}` },
+          (payload) => {
+            queueRef.current.push(payload.new as Message)
+            processQueue()
+          }
+        )
+        .subscribe()
+    }
+
+    document.addEventListener('comet-overlay-hide', onHide)
+    document.addEventListener('comet-overlay-show', onShow)
+
+    return () => {
+      supabase.removeChannel(channel)
+      document.removeEventListener('comet-overlay-hide', onHide)
+      document.removeEventListener('comet-overlay-show', onShow)
+    }
   }, [roomId, processQueue])
 
   return (

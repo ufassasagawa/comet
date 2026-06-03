@@ -17,10 +17,10 @@ export default function StampPopper({ roomSlug }: Props) {
   const supabase = createClient()
 
   useEffect(() => {
-    const channel = supabase
+    let channel = supabase
       .channel(`room:${roomSlug}`)
       .on('broadcast', { event: 'stamp' }, ({ payload }: { payload: StampBroadcast }) => {
-        const x = 10 + Math.random() * 80 // 10%〜90% の横位置
+        const x = 10 + Math.random() * 80
         const id = `${payload.id}-${Date.now()}`
         setStamps(prev => [...prev, { ...payload, id, x }])
         setTimeout(() => {
@@ -29,7 +29,32 @@ export default function StampPopper({ roomSlug }: Props) {
       })
       .subscribe()
 
-    return () => { supabase.removeChannel(channel) }
+    function onHide() {
+      supabase.removeChannel(channel)
+      setStamps([])
+    }
+    function onShow() {
+      channel = supabase
+        .channel(`room:${roomSlug}`)
+        .on('broadcast', { event: 'stamp' }, ({ payload }: { payload: StampBroadcast }) => {
+          const x = 10 + Math.random() * 80
+          const id = `${payload.id}-${Date.now()}`
+          setStamps(prev => [...prev, { ...payload, id, x }])
+          setTimeout(() => {
+            setStamps(prev => prev.filter(s => s.id !== id))
+          }, ANIM_DURATION + 200)
+        })
+        .subscribe()
+    }
+
+    document.addEventListener('comet-overlay-hide', onHide)
+    document.addEventListener('comet-overlay-show', onShow)
+
+    return () => {
+      supabase.removeChannel(channel)
+      document.removeEventListener('comet-overlay-hide', onHide)
+      document.removeEventListener('comet-overlay-show', onShow)
+    }
   }, [roomSlug])
 
   return (
