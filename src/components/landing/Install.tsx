@@ -5,8 +5,12 @@ const INSTALL_STEPS = [
   <>ログインして <span className="text-slate-200 font-medium">.dmg をダウンロード</span>（社内の Google Drive からDLします）</>,
   <>dmg をダブルクリック → <span className="text-slate-200 font-medium">☄️ Comet を「Applications」にドラッグ</span></>,
   <>
-    アプリケーションフォルダから <span className="text-slate-200 font-medium">右クリック →「開く」</span>
-    （「開発元を検証できません」と出たらもう一度「開く」。<span className="text-amber-400">この右クリック起動は初回の1回だけ</span>）
+    Comet をダブルクリック → 「開けません」と出たら <span className="text-slate-200 font-medium">「OK」</span> で閉じる
+  </>,
+  <>
+    <span className="text-slate-200 font-medium">システム設定 → プライバシーとセキュリティ</span> を開き、下の
+    <span className="text-slate-200 font-medium">「"Comet" は…ブロックされました」→「このまま開く」</span> で許可
+    （<span className="text-amber-400">この許可は初回の1回だけ</span>）
   </>,
   <>次回からは普通にダブルクリックでOK 🎉</>,
 ]

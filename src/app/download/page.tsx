@@ -58,9 +58,10 @@ export default async function DownloadPage() {
             <ol className="list-decimal list-inside space-y-1">
               <li>dmg をダブルクリックして開く</li>
               <li>☄️ Comet を「Applications」フォルダにドラッグ</li>
+              <li>Comet をダブルクリック →「開けません」と出たら「OK」で閉じる</li>
               <li>
-                初回のみ <span className="text-slate-200">右クリック →「開く」</span>
-                （「開発元を検証できません」と出たらもう一度「開く」）
+                <span className="text-slate-200">システム設定 → プライバシーとセキュリティ</span> を開き、下の
+                <span className="text-slate-200">「"Comet" は…ブロックされました」→「このまま開く」</span> で許可（初回だけ）
               </li>
               <li>次回からは普通にダブルクリックでOK</li>
             </ol>
