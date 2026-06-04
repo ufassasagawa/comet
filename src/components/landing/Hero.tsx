@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import DanmakuPreview from './DanmakuPreview'
 
 export default function Hero() {
   return (
@@ -19,29 +20,8 @@ export default function Hero() {
         プレゼンの上に参加者のコメント・スタンプがリアルタイムで流れる、社内向けツールです
       </p>
 
-      {/* 弾幕プレビュー（雰囲気が伝わる静的モック） */}
-      <div
-        className="mt-10 w-full max-w-2xl rounded-2xl border border-slate-700 overflow-hidden relative"
-        style={{ background: 'var(--bg-secondary)' }}
-      >
-        <div className="px-5 py-3 border-b border-slate-700 text-left text-slate-500 text-xs">
-          📊 発表スライド.key — 画面共有中
-        </div>
-        <div className="relative h-44 px-5">
-          <span className="absolute top-4 right-8 font-bold text-lg" style={{ color: '#f87171', textShadow: '0 0 4px #000, 1px 1px 2px #000' }}>
-            なるほど！！
-          </span>
-          <span className="absolute top-14 left-10 font-bold text-lg" style={{ color: '#4ade80', textShadow: '0 0 4px #000, 1px 1px 2px #000' }}>
-            この機能ほしかった
-          </span>
-          <span className="absolute top-24 right-20 font-bold text-lg" style={{ color: '#fff', textShadow: '0 0 4px #000, 1px 1px 2px #000' }}>
-            ８８８８８８
-          </span>
-          <span className="absolute bottom-3 left-8 text-3xl">🎉</span>
-          <span className="absolute bottom-6 left-24 text-2xl opacity-80">👏</span>
-          <span className="absolute bottom-2 right-16 text-3xl">❤️</span>
-        </div>
-      </div>
+      {/* 弾幕プレビュー（CSS アニメーションで実際に流れるデモ） */}
+      <DanmakuPreview />
 
       <div className="mt-10 flex flex-col sm:flex-row gap-4">
         <Link
