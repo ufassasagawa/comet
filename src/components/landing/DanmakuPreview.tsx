@@ -2,13 +2,14 @@
 // オンライン会議（Meet 風）で発表スライドを画面共有している裏画面の上を、
 // 本物と同じ雰囲気でコメントが流れ・スタンプが跳ねる。
 
+// 同一レーン内は duration を揃え、delay を半周期ずらす（速度が同じなら絶対に追突しない）
 const COMMENTS = [
-  { text: 'なるほど！！', color: '#ff8800', lane: 0, duration: 9, delay: 0 },
-  { text: 'この機能ほしかった', color: '#44cc44', lane: 1, duration: 11, delay: 2.5 },
-  { text: '８８８８８８８８', color: '#ffffff', lane: 2, duration: 8, delay: 1.2 },
+  { text: 'なるほど！！', color: '#ff8800', lane: 0, duration: 10, delay: 0 },
   { text: 'わかりやすい〜', color: '#4499ff', lane: 0, duration: 10, delay: 5 },
-  { text: '神機能きた', color: '#cc44ff', lane: 1, duration: 9, delay: 7.5 },
-  { text: 'すごい！！！', color: '#ff4444', lane: 2, duration: 10, delay: 4.8 },
+  { text: 'この機能ほしかった', color: '#44cc44', lane: 1, duration: 12, delay: 2 },
+  { text: '神機能きた', color: '#cc44ff', lane: 1, duration: 12, delay: 8 },
+  { text: '８８８８８８８８', color: '#ffffff', lane: 2, duration: 11, delay: 3.5 },
+  { text: 'すごい！！！', color: '#ff4444', lane: 2, duration: 11, delay: 9 },
 ]
 
 const STAMPS = [
@@ -21,10 +22,10 @@ const STAMPS = [
 ]
 
 const PARTICIPANTS = [
-  { emoji: '🧑‍💻', name: 'Sasagawa', bg: '#3b3460' },
-  { emoji: '👩‍💼', name: 'Tanaka', bg: '#2d4a3e' },
-  { emoji: '👨‍🦱', name: 'Suzuki', bg: '#4a3a2d' },
-  { emoji: '🧔', name: 'Sato', bg: '#2d3c4a' },
+  { emoji: '🎤', name: 'John', bg: '#3b3460' },
+  { emoji: '🎸', name: 'Paul', bg: '#2d4a3e' },
+  { emoji: '🎵', name: 'George', bg: '#4a3a2d' },
+  { emoji: '🥁', name: 'Ringo', bg: '#2d3c4a' },
 ]
 
 export default function DanmakuPreview() {
@@ -71,19 +72,37 @@ export default function DanmakuPreview() {
               <li>・社内ツール活用で工数 18% 削減</li>
               <li>・AI ワークショップ全社展開</li>
             </ul>
-            <div className="mt-auto flex items-end gap-2.5">
-              {[
-                { h: 'h-7', label: '1Q' },
-                { h: 'h-12', label: '2Q' },
-                { h: 'h-16', label: '3Q' },
-                { h: 'h-20', label: '4Q' },
-              ].map((bar, i) => (
-                <div key={i} className="flex flex-col items-center gap-0.5">
-                  <div className={`w-9 ${bar.h} rounded-t-sm`} style={{ background: `rgba(129, 140, 248, ${0.45 + i * 0.18})` }} />
-                  <span className="text-[9px] text-slate-400">{bar.label}</span>
+            <div className="mt-auto flex items-end justify-between">
+              {/* 棒グラフ */}
+              <div>
+                <p className="text-[10px] text-slate-400 mb-1">売上推移</p>
+                <div className="flex items-end gap-2.5">
+                  {[
+                    { h: 'h-7', label: '1Q' },
+                    { h: 'h-12', label: '2Q' },
+                    { h: 'h-16', label: '3Q' },
+                    { h: 'h-20', label: '4Q' },
+                  ].map((bar, i) => (
+                    <div key={i} className="flex flex-col items-center gap-0.5">
+                      <div className={`w-9 ${bar.h} rounded-t-sm`} style={{ background: `rgba(129, 140, 248, ${0.45 + i * 0.18})` }} />
+                      <span className="text-[9px] text-slate-400">{bar.label}</span>
+                    </div>
+                  ))}
                 </div>
-              ))}
-              <p className="ml-auto self-start text-[10px] text-slate-400">売上推移</p>
+              </div>
+              {/* ドーナツグラフ（目標達成率） */}
+              <div className="flex flex-col items-center gap-1 mr-2">
+                <div
+                  className="relative w-24 h-24 rounded-full"
+                  style={{ background: 'conic-gradient(#818cf8 0deg, #a78bfa 280deg, #e2e8f0 280deg)' }}
+                >
+                  <div className="absolute inset-2.5 rounded-full bg-slate-50 flex flex-col items-center justify-center">
+                    <span className="text-slate-800 font-bold text-base leading-none">118%</span>
+                    <span className="text-[8px] text-slate-400 mt-0.5">対 目標</span>
+                  </div>
+                </div>
+                <span className="text-[10px] text-slate-400">目標達成率</span>
+              </div>
             </div>
           </div>
 
