@@ -64,36 +64,71 @@ export default function DanmakuPreview() {
         {/* 会議レイアウト: 左=共有スライド・右=参加者タイル */}
         <div className="absolute inset-0 flex gap-2 p-3 pb-12">
           {/* 共有中のスライド（白いプレゼン資料） */}
-          <div className="flex-1 rounded-lg bg-slate-50 px-7 py-5 text-left flex flex-col shadow-inner">
+          <div className="flex-1 rounded-lg bg-slate-50 px-7 py-4 text-left flex flex-col shadow-inner">
             <p className="text-slate-800 font-bold text-base leading-tight">2026年度 上期ハイライト</p>
             <div className="mt-0.5 h-0.5 w-12 rounded" style={{ background: 'linear-gradient(90deg, #818cf8, #a78bfa)' }} />
-            <ul className="mt-3 space-y-1.5 text-[11px] text-slate-600">
-              <li>・新規プロジェクト 12件 立ち上げ</li>
-              <li>・社内ツール活用で工数 18% 削減</li>
-              <li>・AI ワークショップ全社展開</li>
-            </ul>
-            <div className="mt-auto flex items-end justify-between">
-              {/* 棒グラフ */}
+
+            {/* 箇条書き + KPI カード */}
+            <div className="mt-2.5 flex gap-4">
+              <ul className="space-y-1 text-[11px] text-slate-600 flex-1">
+                <li>・新規プロジェクト 12件 立ち上げ</li>
+                <li>・社内ツール活用で工数 18% 削減</li>
+                <li>・AI ワークショップ全社展開</li>
+              </ul>
+              <div className="flex gap-2">
+                <div className="rounded-md border border-indigo-100 bg-indigo-50/80 px-3 py-1.5 text-center">
+                  <p className="text-[8px] text-slate-400 leading-none">売上</p>
+                  <p className="text-slate-800 font-bold text-sm leading-tight">¥4.2B</p>
+                  <p className="text-[8px] text-emerald-500 leading-none">▲ 18%</p>
+                </div>
+                <div className="rounded-md border border-indigo-100 bg-indigo-50/80 px-3 py-1.5 text-center">
+                  <p className="text-[8px] text-slate-400 leading-none">新規顧客</p>
+                  <p className="text-slate-800 font-bold text-sm leading-tight">32社</p>
+                  <p className="text-[8px] text-emerald-500 leading-none">▲ 9社</p>
+                </div>
+              </div>
+            </div>
+
+            {/* グラフ3点盛り: 棒・折れ線・ドーナツ */}
+            <div className="mt-auto flex items-end justify-between gap-4">
               <div>
                 <p className="text-[10px] text-slate-400 mb-1">売上推移</p>
-                <div className="flex items-end gap-2.5">
+                <div className="flex items-end gap-2">
                   {[
-                    { h: 'h-7', label: '1Q' },
-                    { h: 'h-12', label: '2Q' },
-                    { h: 'h-16', label: '3Q' },
-                    { h: 'h-20', label: '4Q' },
+                    { h: 'h-6', label: '1Q' },
+                    { h: 'h-10', label: '2Q' },
+                    { h: 'h-14', label: '3Q' },
+                    { h: 'h-[68px]', label: '4Q' },
                   ].map((bar, i) => (
                     <div key={i} className="flex flex-col items-center gap-0.5">
-                      <div className={`w-9 ${bar.h} rounded-t-sm`} style={{ background: `rgba(129, 140, 248, ${0.45 + i * 0.18})` }} />
+                      <div className={`w-8 ${bar.h} rounded-t-sm`} style={{ background: `rgba(129, 140, 248, ${0.45 + i * 0.18})` }} />
                       <span className="text-[9px] text-slate-400">{bar.label}</span>
                     </div>
                   ))}
                 </div>
               </div>
-              {/* ドーナツグラフ（目標達成率） */}
-              <div className="flex flex-col items-center gap-1 mr-2">
+              <div className="flex flex-col items-center">
+                <svg width="150" height="74" viewBox="0 0 150 74" className="overflow-visible">
+                  {[18, 36, 54].map(y => (
+                    <line key={y} x1="0" y1={y} x2="150" y2={y} stroke="#e2e8f0" strokeWidth="1" />
+                  ))}
+                  <polyline
+                    points="6,58 42,46 78,50 114,28 146,12"
+                    fill="none"
+                    stroke="#a78bfa"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  {[[6, 58], [42, 46], [78, 50], [114, 28], [146, 12]].map(([x, y], i) => (
+                    <circle key={i} cx={x} cy={y} r="3" fill="#818cf8" />
+                  ))}
+                </svg>
+                <span className="text-[10px] text-slate-400 mt-1">社員満足度</span>
+              </div>
+              <div className="flex flex-col items-center gap-1">
                 <div
-                  className="relative w-24 h-24 rounded-full"
+                  className="relative w-[88px] h-[88px] rounded-full"
                   style={{ background: 'conic-gradient(#818cf8 0deg, #a78bfa 280deg, #e2e8f0 280deg)' }}
                 >
                   <div className="absolute inset-2.5 rounded-full bg-slate-50 flex flex-col items-center justify-center">
