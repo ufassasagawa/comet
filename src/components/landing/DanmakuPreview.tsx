@@ -22,10 +22,10 @@ const STAMPS = [
 ]
 
 const PARTICIPANTS = [
-  { emoji: '🎤', name: 'John', bg: '#3b3460' },
-  { emoji: '🎸', name: 'Paul', bg: '#2d4a3e' },
-  { emoji: '🎵', name: 'George', bg: '#4a3a2d' },
-  { emoji: '🥁', name: 'Ringo', bg: '#2d3c4a' },
+  { emoji: '🧑‍💻', name: 'Mukai', bg: '#3b3460' },
+  { emoji: '👩‍💼', name: 'Tabuchi', bg: '#2d4a3e' },
+  { emoji: '👨‍🦱', name: 'Nakao', bg: '#4a3a2d' },
+  { emoji: '🧔', name: 'Inazawa', bg: '#2d3c4a' },
 ]
 
 export default function DanmakuPreview() {
