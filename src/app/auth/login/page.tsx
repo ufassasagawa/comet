@@ -1,15 +1,28 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { ALLOWED_DOMAIN } from '@/lib/constants'
+import StarfieldBg from '@/components/landing/StarfieldBg'
 
 export default function LoginPage() {
   const supabase = createClient()
+  const [domainError, setDomainError] = useState(false)
+  const [isApp, setIsApp] = useState(false)
+
+  useEffect(() => {
+    // ?error=domain: 社外アカウントでログインを試みた（callback で弾かれた）
+    setDomainError(new URLSearchParams(location.search).get('error') === 'domain')
+    // comet_app クッキー: デスクトップアプリから開いている（終了ボタンを出す）
+    setIsApp(document.cookie.includes('comet_app=1'))
+  }, [])
 
   async function signInWithGoogle() {
     await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
         redirectTo: `${location.origin}/auth/callback`,
+        queryParams: { hd: ALLOWED_DOMAIN }, // 社内アカウントを優先表示（強制は callback 側）
       },
     })
   }
@@ -17,21 +30,7 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--bg-primary)' }}>
       {/* 星空ドット背景 */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {Array.from({ length: 60 }).map((_, i) => (
-          <div
-            key={i}
-            className="absolute rounded-full bg-white"
-            style={{
-              width: Math.random() > 0.8 ? '2px' : '1px',
-              height: Math.random() > 0.8 ? '2px' : '1px',
-              top: `${Math.random() * 100}%`,
-              left: `${Math.random() * 100}%`,
-              opacity: Math.random() * 0.6 + 0.2,
-            }}
-          />
-        ))}
-      </div>
+      <StarfieldBg count={60} />
 
       <div className="relative z-10 text-center px-8">
         {/* ロゴ */}
@@ -62,6 +61,21 @@ export default function LoginPage() {
         </button>
 
         <p className="mt-6 text-slate-500 text-sm">主催者（発表者）向けのログインです</p>
+
+        {domainError && (
+          <p className="mt-4 text-sm text-red-400 bg-red-950/40 border border-red-900 rounded-xl px-4 py-3">
+            社内（{ALLOWED_DOMAIN}）の Google アカウントでログインしてください
+          </p>
+        )}
+
+        {isApp && (
+          <button
+            onClick={() => { window.location.href = '/quit-app' }}
+            className="mt-8 text-sm text-slate-500 hover:text-red-400 transition-colors"
+          >
+            アプリを終了
+          </button>
+        )}
       </div>
     </div>
   )

@@ -26,18 +26,31 @@ export async function proxy(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser()
 
   const { pathname } = request.nextUrl
+  // デスクトップアプリ（Electron）は起動時に comet_app クッキーをセットしてくる。
+  // ブラウザにはこれが無いので、ランディング／DLページに出し分ける。
+  const isApp = request.cookies.has('comet_app')
 
-  // /dashboard と /overlay は認証必須
-  if (!user && (pathname.startsWith('/dashboard') || pathname.startsWith('/overlay'))) {
+  // /dashboard・/overlay・/download は認証必須
+  if (!user && (pathname.startsWith('/dashboard') || pathname.startsWith('/overlay') || pathname === '/download')) {
     const url = request.nextUrl.clone()
     url.pathname = '/auth/login'
     return NextResponse.redirect(url)
   }
 
-  // ルートへのアクセスをリダイレクト
+  // ルート: アプリは従来どおりリダイレクト、ブラウザはランディングを表示
   if (pathname === '/') {
+    if (isApp) {
+      const url = request.nextUrl.clone()
+      url.pathname = user ? '/dashboard' : '/auth/login'
+      return NextResponse.redirect(url)
+    }
+    return supabaseResponse
+  }
+
+  // ダッシュボード本体はアプリ専用（完全一致のみ。/dashboard/rooms/[id]/log はブラウザでも閲覧可）
+  if (pathname === '/dashboard' && !isApp) {
     const url = request.nextUrl.clone()
-    url.pathname = user ? '/dashboard' : '/auth/login'
+    url.pathname = '/download'
     return NextResponse.redirect(url)
   }
 
@@ -45,5 +58,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/', '/dashboard/:path*', '/overlay/:path*'],
+  matcher: ['/', '/dashboard/:path*', '/overlay/:path*', '/download'],
 }
