@@ -4,8 +4,8 @@
 export const ALLOWED_DOMAIN = 'ufas.co.jp'
 
 // デスクトップ版 .dmg の配布リンク（Google Drive・ufas.co.jp ドメイン限定共有）
-// アップロード後に実 URL へ差し替える
-export const DRIVE_DMG_URL = 'https://drive.google.com/__PLACEHOLDER__'
+// フォルダ: https://drive.google.com/drive/folders/1R-8MVBoe7hiSCTa5IAgrcxFsF0R1at7x
+export const DRIVE_DMG_URL = 'https://drive.google.com/file/d/1wLlrjRzw1beELK4Wc0cv2A41j3kr2SBN/view'
 export const DMG_FILENAME = 'Comet-0.1.0.dmg'
 export const DMG_SIZE_LABEL = '約192MB'
 
