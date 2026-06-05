@@ -6,13 +6,12 @@ export default async function ParticipantPage({ params }: { params: Promise<{ sl
   const { slug } = await params
   const supabase = await createClient()
 
-  const { data: room } = await supabase
-    .from('rooms')
-    .select('id, title, is_active, expires_at')
-    .eq('slug', slug)
-    .single()
+  // 列挙を防ぐため、テーブル直読みではなく SECURITY DEFINER 関数で slug 1件だけ取得する。
+  // 関数はアクティブ・非失効のルームのみ返す（無ければ「終了しました」を表示）。
+  const { data: rooms } = await supabase.rpc('get_active_room', { p_slug: slug })
+  const room = rooms?.[0]
 
-  const isExpired = !room || !room.is_active || new Date(room.expires_at) < new Date()
+  const isExpired = !room
 
   if (isExpired) {
     return (
