@@ -14,9 +14,14 @@ export default function DashboardPage() {
   const origin = typeof window !== 'undefined' ? window.location.origin : ''
 
   async function loadRooms() {
+    // 自分のルームだけ表示する（RLS の「アクティブなら誰でも読める」ポリシーで
+    // 他人のルームも返ってくるため、host_id で明示的に絞る）
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return
     const { data } = await supabase
       .from('rooms')
       .select('*')
+      .eq('host_id', user.id)
       .order('created_at', { ascending: false })
     setRooms(data ?? [])
   }
