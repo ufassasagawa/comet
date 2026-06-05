@@ -28,6 +28,7 @@
 - `src/lib/constants.ts` … `ALLOWED_DOMAIN` / `DRIVE_DMG_URL` / `DRIVE_EXE_URL` 等の定数
 - `public/INSTALL.md` … 説明書（ソースは `../comet-desktop/INSTALL.md`、更新時は手動同期）
 - `supabase/migrations/0001_init.sql` … rooms / messages テーブル + RLS
+- `supabase/migrations/0002_tighten_room_rls.sql` … 列挙防止。参加者は `get_active_room(slug)`／投稿は `is_room_open(room_id)`（SECURITY DEFINER）経由。rooms 全体への匿名 SELECT は撤去（ホストは自分のルームのみ）
 
 ## データ方針
 - コメント = `messages` に保存 → Realtime(postgres_changes) で弾幕へ（履歴で見返せる）
