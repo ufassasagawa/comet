@@ -38,7 +38,7 @@ export default function Hero() {
           使い方を見る
         </a>
       </div>
-      <p className="mt-4 text-slate-600 text-xs">Mac 専用デスクトップアプリ／主催者のみログインが必要です</p>
+      <p className="mt-4 text-slate-600 text-xs">Mac / Windows 対応のデスクトップアプリ／主催者のみログインが必要です</p>
     </section>
   )
 }

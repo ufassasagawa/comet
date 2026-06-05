@@ -2,7 +2,11 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { getRemainingDays } from '@/lib/utils'
-import { DRIVE_DMG_URL, DMG_FILENAME, DMG_SIZE_LABEL, INSTALL_MD_PATH } from '@/lib/constants'
+import {
+  DRIVE_DMG_URL, DMG_FILENAME, DMG_SIZE_LABEL,
+  DRIVE_EXE_URL, EXE_FILENAME, EXE_SIZE_LABEL,
+  INSTALL_MD_PATH,
+} from '@/lib/constants'
 import LogoutButton from '@/components/download/LogoutButton'
 import type { Room } from '@/types'
 
@@ -37,38 +41,63 @@ export default async function DownloadPage() {
         >
           <div className="text-5xl mb-3">☄️</div>
           <h1 className="text-xl font-bold text-slate-100">Comet デスクトップアプリ</h1>
-          <p className="mt-2 text-sm text-slate-400">
-            {DMG_FILENAME}（Mac 専用・Apple Silicon / Intel 両対応・{DMG_SIZE_LABEL}）
-          </p>
-          <a
-            href={DRIVE_DMG_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-block mt-6 px-8 py-4 rounded-2xl font-semibold text-lg transition-all hover:scale-105 active:scale-95"
-            style={{ background: 'linear-gradient(135deg, #818cf8, #a78bfa)', color: '#fff' }}
-          >
-            ⬇ ダウンロード（Google Drive）
-          </a>
+          <p className="mt-2 text-sm text-slate-400">お使いの OS を選んでダウンロードしてください</p>
+
+          {/* OS 別ダウンロードボタン */}
+          <div className="mt-6 grid sm:grid-cols-2 gap-3">
+            <a
+              href={DRIVE_DMG_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex flex-col items-center gap-1 px-6 py-4 rounded-2xl font-semibold transition-all hover:scale-105 active:scale-95"
+              style={{ background: 'linear-gradient(135deg, #818cf8, #a78bfa)', color: '#fff' }}
+            >
+              <span className="text-base"> Mac 版をダウンロード</span>
+              <span className="text-xs font-normal opacity-90">{DMG_FILENAME}・{DMG_SIZE_LABEL}</span>
+            </a>
+            <a
+              href={DRIVE_EXE_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex flex-col items-center gap-1 px-6 py-4 rounded-2xl font-semibold transition-all hover:scale-105 active:scale-95 border border-slate-500 text-slate-100"
+              style={{ background: 'rgba(129, 140, 248, 0.12)' }}
+            >
+              <span className="text-base">⊞ Windows 版をダウンロード</span>
+              <span className="text-xs font-normal opacity-80">{EXE_FILENAME}・{EXE_SIZE_LABEL}</span>
+            </a>
+          </div>
           <p className="mt-3 text-xs text-slate-500">
             社内限定共有のため、社の Google アカウントでのアクセスが必要です
           </p>
 
-          <div className="mt-6 text-left text-sm text-slate-400 leading-relaxed border-t border-slate-700 pt-5">
-            <p className="font-semibold text-slate-300 mb-2">インストール（初回だけ）</p>
-            <ol className="list-decimal list-inside space-y-1">
-              <li>dmg をダブルクリックして開く</li>
-              <li>☄️ Comet を「Applications」フォルダにドラッグ</li>
-              <li>Comet をダブルクリック →「開けません」と出たら「OK」で閉じる</li>
-              <li>
-                <span className="text-slate-200">システム設定 → プライバシーとセキュリティ</span> を開き、下の
-                <span className="text-slate-200">「"Comet" は…ブロックされました」→「このまま開く」</span> で許可（初回だけ）
-              </li>
-              <li>次回からは普通にダブルクリックでOK</li>
-            </ol>
-            <a href={INSTALL_MD_PATH} download className="inline-block mt-3 text-slate-500 hover:text-slate-300 underline transition-colors">
-              詳しい説明書（INSTALL.md）をダウンロード
-            </a>
+          {/* OS 別インストール手順 */}
+          <div className="mt-6 grid sm:grid-cols-2 gap-5 text-left text-sm text-slate-400 leading-relaxed border-t border-slate-700 pt-5">
+            <div>
+              <p className="font-semibold text-slate-300 mb-2"> Mac のインストール</p>
+              <ol className="list-decimal list-inside space-y-1">
+                <li>dmg を開き ☄️ Comet を「Applications」へドラッグ</li>
+                <li>Comet をダブルクリック →「開けません」は「OK」</li>
+                <li>
+                  <span className="text-slate-200">システム設定 → プライバシーとセキュリティ → 「このまま開く」</span>（初回だけ）
+                </li>
+                <li>次回から普通にダブルクリックでOK</li>
+              </ol>
+            </div>
+            <div>
+              <p className="font-semibold text-slate-300 mb-2">⊞ Windows のインストール</p>
+              <ol className="list-decimal list-inside space-y-1">
+                <li>exe をダブルクリックで実行</li>
+                <li>
+                  「PC が保護されました」→ <span className="text-slate-200">「詳細情報」→「実行」</span>（初回だけ）
+                </li>
+                <li>ウィザードで「次へ」→「インストール」（管理者権限不要）</li>
+                <li>スタートメニュー／デスクトップから起動</li>
+              </ol>
+            </div>
           </div>
+          <a href={INSTALL_MD_PATH} download className="inline-block mt-4 text-slate-500 hover:text-slate-300 underline transition-colors">
+            詳しい説明書（INSTALL.md）をダウンロード
+          </a>
         </section>
 
         {/* コメントログ */}
