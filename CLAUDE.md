@@ -15,7 +15,7 @@
 - **ブラウザ**: `/` = ランディング（紹介・DL導線）、ログイン後は `/download`（DLボタン・手順・ログ閲覧のみ）。`/dashboard` 完全一致はブラウザだと `/download` へリダイレクト
 - **アプリ**: 従来どおり `/` → `/dashboard` フル機能（ルーム作成・弾幕）
 - ログページ `/dashboard/rooms/[id]/log` はブラウザでも閲覧可。`/overlay` の URL 直打ちも黙認（導線なし）
-- .dmg 本体は Google Drive 社内限定共有（リンクは `src/lib/constants.ts` の `DRIVE_DMG_URL`）
+- 配布物（Mac .dmg / Windows .exe）は Google Drive 社内限定共有（リンクは `src/lib/constants.ts` の `DRIVE_DMG_URL` / `DRIVE_EXE_URL`）
 
 ## 主要ファイル
 - `src/app/page.tsx` + `src/components/landing/` … ブラウザ向けランディング
@@ -23,9 +23,9 @@
 - `src/app/dashboard/` … 主催者: ルーム作成・URL発行・コメントログ（アプリ専用）
 - `src/app/r/[slug]/` … 参加ページ（コメント＋スタンプ、スマホ前提）
 - `src/app/overlay/[slug]/` … 弾幕ページ（`?app=1` で背景透明＝Electron用）
-- `src/components/overlay/DanmakuLayer.tsx` … 弾幕（5レーン固定・流れ切ったレーンを上から再利用）
+- `src/components/overlay/DanmakuLayer.tsx` … 弾幕（12レーン固定・流れ切ったレーンを上から再利用）
 - `src/components/overlay/StampPopper.tsx` … スタンプ（Realtime Broadcast、DB保存なし）
-- `src/lib/constants.ts` … `ALLOWED_DOMAIN` / `DRIVE_DMG_URL` 等の定数
+- `src/lib/constants.ts` … `ALLOWED_DOMAIN` / `DRIVE_DMG_URL` / `DRIVE_EXE_URL` 等の定数
 - `public/INSTALL.md` … 説明書（ソースは `../comet-desktop/INSTALL.md`、更新時は手動同期）
 - `supabase/migrations/0001_init.sql` … rooms / messages テーブル + RLS
 
