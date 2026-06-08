@@ -14,6 +14,7 @@ export function getRemainingDays(expiresAt: string): number {
 
 export function formatTime(isoString: string): string {
   return new Date(isoString).toLocaleTimeString('ja-JP', {
+    timeZone: 'Asia/Tokyo',
     hour: '2-digit',
     minute: '2-digit',
   })
