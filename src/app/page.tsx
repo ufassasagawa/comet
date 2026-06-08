@@ -15,7 +15,7 @@ export default function LandingPage() {
       <HowItWorks />
       <Install />
       <footer className="relative z-10 text-center text-slate-600 text-xs py-10 border-t border-slate-800">
-        Comet ☄️ — 社内向けツール／お問い合わせは Slack で笹川まで
+        Comet ☄️ — 社内向けツール／お問い合わせは Slack で佐々川まで
       </footer>
     </div>
   )
