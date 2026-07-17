@@ -2,22 +2,22 @@
 
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { Message, COLOR_PALETTE } from '@/types'
+import { CommentBroadcast, COLOR_PALETTE } from '@/types'
 
 const FIXED_LANES = 12        // 固定レーン数。上から順に 0〜11（画面をほぼ全面活用＝レーン不足を防ぐ）
 const LANE_VH = 8             // 1レーンの高さ = 画面高の8% → 12レーンで約96%（2+12×8=98vh）（ディスプレイ相対）
 const TOP_OFFSET_VH = 2       // 最上段の上マージン（メニューバー回避）
 const ANIM_DURATION = 8000    // コメントが右端から左端に抜けるまでの ms
 
-type ActiveComment = Message & { lane: number; animKey: string }
+type ActiveComment = CommentBroadcast & { lane: number; animKey: string }
 
-type Props = { roomId: string }
+type Props = { roomSlug: string }
 
-export default function DanmakuLayer({ roomId }: Props) {
+export default function DanmakuLayer({ roomSlug }: Props) {
   const [comments, setComments] = useState<ActiveComment[]>([])
   // 各レーンが「空き」になる時刻（epoch ms）。0 = 最初から空き
   const laneAvailableAt = useRef<number[]>(Array(FIXED_LANES).fill(0))
-  const queueRef = useRef<Message[]>([])
+  const queueRef = useRef<CommentBroadcast[]>([])
   const supabase = createClient()
 
   const colorMap = Object.fromEntries(COLOR_PALETTE.map(c => [c.name, c.value]))
@@ -68,17 +68,29 @@ export default function DanmakuLayer({ roomId }: Props) {
   }, [])
 
   useEffect(() => {
-    let channel = supabase
-      .channel(`danmaku:${roomId}`)
-      .on(
-        'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'messages', filter: `room_id=eq.${roomId}` },
-        (payload) => {
-          queueRef.current.push(payload.new as Message)
+    // スタンプとは別 topic（`room:${slug}`）にする。同一 topic だと realtime-js が同一
+    // channel インスタンスを返し、DanmakuLayer と StampPopper の subscribe/removeChannel が競合するため
+    function openChannel() {
+      return supabase
+        .channel(`danmaku:${roomSlug}`)
+        .on('broadcast', { event: 'comment' }, ({ payload }) => {
+          if (!payload) return // 生の送信で payload 欠落の可能性（悪意 or バグ）に備える
+          const p = payload as CommentBroadcast
+          queueRef.current.push({
+            ...p,
+            content: String(p.content ?? '').slice(0, 40),          // DBのCHECK制約を経由しないため受信側でクランプ
+            nickname: p.nickname ? String(p.nickname).slice(0, 20) : null,
+          })
           processQueue()
-        }
-      )
-      .subscribe()
+        })
+        .subscribe((status, err) => {
+          if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+            console.error('[comet] danmaku channel error:', status, err)
+          }
+        })
+    }
+
+    let channel = openChannel()
 
     // Electron から非表示イベントが来たら切断してリソース解放
     function onHide() {
@@ -88,17 +100,7 @@ export default function DanmakuLayer({ roomId }: Props) {
     }
     // 再表示イベントが来たら再接続
     function onShow() {
-      channel = supabase
-        .channel(`danmaku:${roomId}`)
-        .on(
-          'postgres_changes',
-          { event: 'INSERT', schema: 'public', table: 'messages', filter: `room_id=eq.${roomId}` },
-          (payload) => {
-            queueRef.current.push(payload.new as Message)
-            processQueue()
-          }
-        )
-        .subscribe()
+      channel = openChannel()
     }
 
     document.addEventListener('comet-overlay-hide', onHide)
@@ -109,7 +111,7 @@ export default function DanmakuLayer({ roomId }: Props) {
       document.removeEventListener('comet-overlay-hide', onHide)
       document.removeEventListener('comet-overlay-show', onShow)
     }
-  }, [roomId, processQueue])
+  }, [roomSlug, processQueue])
 
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">

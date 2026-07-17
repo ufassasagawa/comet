@@ -31,8 +31,9 @@
 - `supabase/migrations/0002_tighten_room_rls.sql` … 列挙防止。参加者は `get_active_room(slug)`／投稿は `is_room_open(room_id)`（SECURITY DEFINER）経由。rooms 全体への匿名 SELECT は撤去（ホストは自分のルームのみ）
 
 ## データ方針
-- コメント = `messages` に保存 → Realtime(postgres_changes) で弾幕へ（履歴で見返せる）
+- コメント = `messages` に保存（ダッシュボードのログ用）＋ Realtime Broadcast（`danmaku:{slug}` に `comment` イベントで送信、弾幕表示用）。insert 成功後にのみ broadcast。postgres_changes は不使用
 - スタンプ = Realtime Broadcast のみ（保存しない・連打対応）
+- 残リスク: 未認証投稿（`messages` insert）にレート制限なし＝**社内・信頼参加者前提**。slug を知る者が flood 可能（`expires_at` 7日 + `is_active` で限定）。さらに Broadcast チャンネル（`danmaku:{slug}`・`room:{slug}`）は public なので、slug + anon キーがあれば DB や `is_room_open` を経由せず弾幕/スタンプへ直接スパム・傍受も可能（受信側で content 40字/nickname 20字にクランプ済み）。外部公開時は Realtime private channels + authorization と、`is_room_open` 等への直近N秒件数チェックで要対策
 
 ## ローカル開発
 `npm run dev`（要 `.env.local`: `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY`）

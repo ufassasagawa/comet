@@ -2,21 +2,23 @@
 
 import { useState, useRef, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { COLOR_PALETTE } from '@/types'
+import { COLOR_PALETTE, CommentBroadcast } from '@/types'
 
 const MAX_CHARS = 40
 
 type Props = {
   roomId: string
+  roomSlug: string
 }
 
-export default function CommentForm({ roomId }: Props) {
+export default function CommentForm({ roomId, roomSlug }: Props) {
   const [text, setText] = useState('')
   const [color, setColor] = useState('white')
   const [nickname, setNickname] = useState(() =>
     typeof window !== 'undefined' ? localStorage.getItem('comet_nickname') ?? '' : ''
   )
   const [sending, setSending] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const lastSentAt = useRef(0)
   const isComposing = useRef(false) // IME変換中フラグ
   const supabase = createClient()
@@ -32,16 +34,36 @@ export default function CommentForm({ roomId }: Props) {
     if (now - lastSentAt.current < 1000) return // 1秒に1件
     lastSentAt.current = now
     setSending(true)
+    setError(null)
 
-    await supabase.from('messages').insert({
-      room_id: roomId,
-      content: text.trim().slice(0, MAX_CHARS),
-      color,
-      nickname: nickname.trim() || null,
-    })
+    try {
+      const content = text.trim().slice(0, MAX_CHARS)
+      const nick = nickname.trim() || null
 
-    setText('')
-    setSending(false)
+      const { error: insertError } = await supabase.from('messages').insert({
+        room_id: roomId,
+        content,
+        color,
+        nickname: nick,
+      })
+
+      if (insertError) {
+        setError('コメントを送信できませんでした。ルームが終了しているか、接続に問題があります。')
+        return // text はクリアしない（再送可能に）
+      }
+
+      // 表示配信はスタンプと同じ Realtime Broadcast（DB保存はログ用のみ）
+      const status = await supabase.channel(`danmaku:${roomSlug}`).send({
+        type: 'broadcast',
+        event: 'comment',
+        payload: { id: `${Date.now()}-${Math.random()}`, content, color, nickname: nick } satisfies CommentBroadcast,
+      })
+      if (status !== 'ok') console.warn('[comet] comment broadcast failed:', status)
+
+      setText('')
+    } finally {
+      setSending(false)
+    }
   }
 
   return (
@@ -115,6 +137,7 @@ export default function CommentForm({ roomId }: Props) {
             →
           </button>
         </div>
+        {error && <p className="text-xs text-red-400 mt-1.5">{error}</p>}
       </div>
     </div>
   )

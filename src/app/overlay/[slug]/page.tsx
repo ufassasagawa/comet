@@ -49,7 +49,7 @@ export default async function OverlayPage({
         <style>{`html, body { background: transparent !important; }`}</style>
       )}
       <div className="fixed inset-0" style={{ background: bg }}>
-        <DanmakuLayer roomId={room.id} />
+        <DanmakuLayer roomSlug={slug} />
         <StampPopper roomSlug={slug} />
 
         {/* 控えめなルーム名表示 */}

@@ -20,6 +20,7 @@ export default function StampPopper({ roomSlug }: Props) {
     let channel = supabase
       .channel(`room:${roomSlug}`)
       .on('broadcast', { event: 'stamp' }, ({ payload }: { payload: StampBroadcast }) => {
+        if (!payload) return // 生の送信で payload 欠落の可能性に備える
         const x = 10 + Math.random() * 80
         const id = `${payload.id}-${Date.now()}`
         setStamps(prev => [...prev, { ...payload, id, x }])
@@ -27,7 +28,11 @@ export default function StampPopper({ roomSlug }: Props) {
           setStamps(prev => prev.filter(s => s.id !== id))
         }, ANIM_DURATION + 200)
       })
-      .subscribe()
+      .subscribe((status, err) => {
+        if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+          console.error('[comet] stamp channel error:', status, err)
+        }
+      })
 
     function onHide() {
       supabase.removeChannel(channel)
@@ -37,6 +42,7 @@ export default function StampPopper({ roomSlug }: Props) {
       channel = supabase
         .channel(`room:${roomSlug}`)
         .on('broadcast', { event: 'stamp' }, ({ payload }: { payload: StampBroadcast }) => {
+          if (!payload) return // 生の送信で payload 欠落の可能性に備える
           const x = 10 + Math.random() * 80
           const id = `${payload.id}-${Date.now()}`
           setStamps(prev => [...prev, { ...payload, id, x }])
@@ -44,7 +50,11 @@ export default function StampPopper({ roomSlug }: Props) {
             setStamps(prev => prev.filter(s => s.id !== id))
           }, ANIM_DURATION + 200)
         })
-        .subscribe()
+        .subscribe((status, err) => {
+          if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+            console.error('[comet] stamp channel error:', status, err)
+          }
+        })
     }
 
     document.addEventListener('comet-overlay-hide', onHide)

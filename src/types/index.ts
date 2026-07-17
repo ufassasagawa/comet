@@ -22,6 +22,13 @@ export type StampBroadcast = {
   id: string
 }
 
+export type CommentBroadcast = {
+  id: string          // クライアント生成。animKey 用の一意性のみ
+  content: string
+  color: string
+  nickname: string | null
+}
+
 export const STAMP_EMOJIS = ['❤️', '👍', '🎉', '👏', '😂', '😮', '😢', '🤔'] as const
 
 export const COLOR_PALETTE: { name: string; value: string }[] = [

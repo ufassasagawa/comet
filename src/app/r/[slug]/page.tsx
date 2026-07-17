@@ -41,7 +41,7 @@ export default async function ParticipantPage({ params }: { params: Promise<{ sl
 
       {/* メインコンテンツ */}
       <main className="flex-1 px-5 py-6 flex flex-col gap-6 max-w-lg mx-auto w-full">
-        <CommentForm roomId={room.id} />
+        <CommentForm roomId={room.id} roomSlug={slug} />
         <div style={{ borderTop: '1px solid #1e293b', paddingTop: '1.5rem' }}>
           <StampPanel roomSlug={slug} />
         </div>
